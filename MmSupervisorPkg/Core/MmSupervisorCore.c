@@ -688,35 +688,19 @@ MmCoreInstallLoadedImage (
   UINT64                MmCoreImageLength;
   EFI_PEI_HOB_POINTERS  Hob;
 
-  //
-  // Searching for Memory Allocation HOB
-  //
-  Hob.Raw = GetHobList ();
-  while ((Hob.Raw = GetNextHob (EFI_HOB_TYPE_MEMORY_ALLOCATION, Hob.Raw)) != NULL) {
-    //
-    // Find MM Core HOB
-    //
-    if (CompareGuid (
-          &Hob.MemoryAllocationModule->MemoryAllocationHeader.Name,
-          &gEfiHobMemoryAllocModuleGuid
-          ))
-    {
-      if (CompareGuid (&Hob.MemoryAllocationModule->ModuleName, &gEfiCallerIdGuid)) {
-        break;
-      }
-    }
+  PE_COFF_LOADER_IMAGE_CONTEXT  ImageContext;
 
-    Hob.Raw = GET_NEXT_HOB (Hob);
-  }
-
-  if (Hob.Raw == NULL) {
+  Hob.Guid = GetFirstGuidHob (&gEfiCallerIdGuid);
+  if (Hob.Guid == NULL) {
     DEBUG ((DEBUG_ERROR, "MM Core Memory Allocation HOB not found!\n"));
     ASSERT (FALSE);
     return;
   }
 
-  MmCoreImageBaseAddress = Hob.MemoryAllocation->AllocDescriptor.MemoryBaseAddress;
-  MmCoreImageLength      = Hob.MemoryAllocation->AllocDescriptor.MemoryLength;
+  CopyMem (&ImageContext, GET_GUID_HOB_DATA (Hob.Guid), sizeof (PE_COFF_LOADER_IMAGE_CONTEXT));
+
+  MmCoreImageBaseAddress = ImageContext.ImageAddress;
+  MmCoreImageLength      = ImageContext.ImageSize;
 
   //
   // Allocate a Loaded Image Protocol in MM
@@ -746,7 +730,7 @@ MmCoreInstallLoadedImage (
   mMmCoreDriverEntry->LoadedImage->ImageCodeType = EfiRuntimeServicesCode;
   mMmCoreDriverEntry->LoadedImage->ImageDataType = EfiRuntimeServicesData;
 
-  mMmCoreDriverEntry->ImageEntryPoint = (EFI_PHYSICAL_ADDRESS)(UINTN)MmSupervisorMain;
+  mMmCoreDriverEntry->ImageEntryPoint = ImageContext.EntryPoint;
   mMmCoreDriverEntry->ImageBuffer     = MmCoreImageBaseAddress;
   mMmCoreDriverEntry->NumberOfPage    = EFI_SIZE_TO_PAGES ((UINTN)MmCoreImageLength);
 

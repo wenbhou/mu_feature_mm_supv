@@ -817,11 +817,10 @@ ExecuteMmCoreFromMmram (
       // MU_CHANGE Starts: To load x64 MM foundation, mode switch is needed
       EntryPoint = (STANDALONE_MM_FOUNDATION_ENTRY_POINT)(UINTN)ImageContext.EntryPoint;
 
-      BuildModuleHob (
+      BuildGuidDataHob (
         &gMmSupervisorCoreGuid,
-        ImageContext.ImageAddress,
-        (UINT64)EFI_PAGES_TO_SIZE (PageCount),
-        (EFI_PHYSICAL_ADDRESS)(UINTN)ImageContext.EntryPoint
+        &ImageContext,
+        sizeof (PE_COFF_LOADER_IMAGE_CONTEXT)
         );
 
       HobStart = GetHobList ();
