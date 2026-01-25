@@ -9,12 +9,29 @@
 #include <Uefi/UefiBaseType.h>
 
 /**
+  Determine if MTRR registers must be configured to set SMRAM cache-ability
+  when executing in System Management Mode.
+
+  @retval TRUE   MTRR registers must be configured to set SMRAM cache-ability.
+  @retval FALSE  MTRR registers do not need to be configured to set SMRAM
+                 cache-ability.
+**/
+BOOLEAN
+EFIAPI
+SmrrLibNeedConfigureMtrrs (
+  VOID
+  )
+{
+  return FALSE;
+}
+
+/**
   Disable SMRRs.
 
 **/
 VOID
 EFIAPI
-SmmrLibSmmrDisable (
+SmrrLibSmrrDisable (
   VOID
   )
 {
@@ -27,7 +44,7 @@ SmmrLibSmmrDisable (
 **/
 VOID
 EFIAPI
-SmmrLibSmmrReenable (
+SmrrLibSmrrReenable (
   VOID
   )
 {

@@ -10,12 +10,26 @@
 #define SMRR_LIB_H_
 
 /**
+  Determine if MTRR registers must be configured to set SMRAM cache-ability
+  when executing in System Management Mode.
+
+  @retval TRUE   MTRR registers must be configured to set SMRAM cache-ability.
+  @retval FALSE  MTRR registers do not need to be configured to set SMRAM
+                 cache-ability.
+**/
+BOOLEAN
+EFIAPI
+SmrrLibNeedConfigureMtrrs (
+  VOID
+);
+
+/**
   Disable SMRRs.
 
 **/
 VOID
 EFIAPI
-SmmrLibSmmrDisable (
+SmrrLibSmrrDisable (
   VOID
   );
 
@@ -25,7 +39,7 @@ SmmrLibSmmrDisable (
 **/
 VOID
 EFIAPI
-SmmrLibSmmrReenable (
+SmrrLibSmrrReenable (
   VOID
   );
 
